@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>🧠 Super AI Brain</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>🧠 Super AI Brain</h1>
+    <input type="text" id="question" placeholder="প্রশ্ন লিখুন...">
+    <button onclick="ask()">Ask</button>
+
+    <div id="answer"></div>
+
+    <div id="teach-box" style="display:none;">
+        <textarea id="teach-answer" placeholder="উত্তর লিখুন..."></textarea>
+        <button onclick="teach()">শিখাও</button>
+    </div>
+</div>
+
+<script>
+function ask() {
+    let question = document.getElementById("question").value;
+    fetch("/ask", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({question})
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("answer").innerText = data.answer;
+        document.getElementById("teach-box").style.display = data.answer.includes("আমি এখনো জানি না") ? "block" : "none";
+    })
+}
+
+function teach() {
+    let question = document.getElementById("question").value;
+    let answer = document.getElementById("teach-answer").value;
+    fetch("/teach", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({question, answer})
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        document.getElementById("teach-box").style.display = "none";
+        document.getElementById("teach-answer").value = "";
+    })
+}
+</script>
+</body>
+</html>
